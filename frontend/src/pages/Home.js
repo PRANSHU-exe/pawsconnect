@@ -43,9 +43,6 @@ const Home = () => {
             <Link to="/create-post" className="btn btn-primary" style={{ padding: '0.75rem 2rem' }}>
               Create Your First Post
             </Link>
-            <Link to="/pawsbot" className="btn btn-secondary" style={{ padding: '0.75rem 2rem' }}>
-              🤖 Chat with PawsBot
-            </Link>
           </div>
         )}
       </div>
@@ -65,13 +62,6 @@ const Home = () => {
           </p>
         </div>
 
-        <div className="card">
-          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🤖</div>
-          <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>PawsBot AI</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Get instant, expert advice for your pet care questions from our AI-powered assistant.
-          </p>
-        </div>
 
         <div className="card">
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏥</div>

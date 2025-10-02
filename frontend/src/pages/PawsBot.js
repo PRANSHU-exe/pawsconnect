@@ -1,242 +1,323 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-
-// Enhanced fallback AI response generator
-const generateFallbackResponse = (userMessage, error) => {
-  const message = userMessage.toLowerCase();
-  
-  // Check if it's an authentication error
-  if (error.message.includes('No authentication token') || error.message.includes('401')) {
-    return "🔐 I notice you're not logged in! Please log in to your PawsConnect account to chat with me. I need to verify you're a member of our pet-loving community! 😊";
-  }
-  
-  // Check if it's a server connection error
-  if (error.message.includes('fetch') || error.message.includes('500') || error.message.includes('connect')) {
-    return "🔧 I'm having trouble connecting to my AI brain right now. The backend server might be taking a quick nap! Please try again in a moment, or check if you're connected to the internet. 🌐";
-  }
-
-  // Keyword-based responses for common pet questions
-  if (message.includes('feed') || message.includes('food') || message.includes('eat')) {
-    return `🍽️ Great question about feeding! While I'm temporarily offline, here's some general advice:\n\n• **Dogs**: Adult dogs typically eat 2-3 meals per day\n• **Cats**: Can eat 2-4 smaller meals per day\n• **Fresh water** should always be available\n• **Avoid** chocolate, onions, grapes, and xylitol\n\n⚠️ For specific dietary needs, always consult your veterinarian!`;
-  }
-  
-  if (message.includes('bark') || message.includes('noise') || message.includes('loud')) {
-    return `🐕 Barking issues are common! Here are some quick tips:\n\n• **Identify triggers** (doorbell, other dogs, etc.)\n• **Don't yell** - it can make it worse\n• **Redirect attention** with toys or training\n• **Exercise** can reduce excessive barking\n• **Positive reinforcement** when quiet\n\n🎯 Consider professional dog training for persistent issues!`;
-  }
-  
-  if (message.includes('sick') || message.includes('ill') || message.includes('symptom') || message.includes('health')) {
-    return `🏥 **IMPORTANT**: For any health concerns, please contact your veterinarian immediately!\n\nCommon signs that need vet attention:\n• Loss of appetite for 24+ hours\n• Vomiting or diarrhea\n• Lethargy or unusual behavior\n• Difficulty breathing\n• Excessive panting\n\n📞 **Emergency?** Contact your emergency vet clinic right away!`;
-  }
-  
-  if (message.includes('train') || message.includes('behavior') || message.includes('discipline')) {
-    return `🎓 Training tips while I'm offline:\n\n• **Positive reinforcement** works best\n• **Consistency** is key - everyone in the house should use same commands\n• **Short sessions** (5-10 minutes) multiple times daily\n• **Patience** - every pet learns at their own pace\n• **High-value treats** for motivation\n\n🏆 Remember: Never punish, always reward good behavior!`;
-  }
-  
-  if (message.includes('cat') && (message.includes('litter') || message.includes('box'))) {
-    return `📦 Litter box issues? Here's what to check:\n\n• **Cleanliness** - scoop daily, change weekly\n• **Location** - quiet, accessible area\n• **Type of litter** - cats can be picky\n• **Box size** - should be 1.5x cat's length\n• **Number** - one per cat, plus one extra\n\n🐱 Sudden changes in litter habits = vet visit needed!`;
-  }
-  
-  if (message.includes('puppy') || message.includes('kitten') || message.includes('young')) {
-    return `🐶🐱 Young pets are special! Quick reminders:\n\n• **Frequent meals** - 3-4x daily until 6 months\n• **Vaccinations** - follow vet schedule\n• **Socialization** - expose to new experiences safely\n• **Sleep** - puppies/kittens sleep 18-20 hours/day\n• **Teething** - provide appropriate chew toys\n\n💉 First vet visit should be within days of adoption!`;
-  }
-  
-  // Default response for unrecognized questions
-  return `🤖 I'm temporarily experiencing technical difficulties, but I don't want to leave you hanging! \n\n💡 **In the meantime:**\n• Browse our community posts for similar questions\n• Check out our pet care categories\n• Consider posting your question to get help from other pet parents\n\n🔄 Please try chatting with me again in a few minutes - I should be back online soon! Your pet's wellbeing is important to me. 🐾`;
-};
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import '../styles/pawsbot-chat.css';
 
 const PawsBot = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      type: 'bot',
-      content: "🐾 Hi there! I'm PawsBot, your AI assistant for pet care questions. How can I help you today?",
-      timestamp: new Date()
-    }
-  ]);
+  const { user } = useAuth();
+  const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [botpressLoading, setBotpressLoading] = useState(true);
+  const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
+  // Predefined questions for quick access
+  const quickQuestions = [
+    {
+      icon: '🍽️',
+      title: 'Pet Nutrition & Feeding',
+      question: 'What is the best diet for my dog? How often should I feed them?'
+    },
+    {
+      icon: '🏥',
+      title: 'Health & Wellness',
+      question: 'What are the common signs of illness in pets that I should watch for?'
+    },
+    {
+      icon: '🎓',
+      title: 'Training & Behavior',
+      question: 'How can I train my puppy to stop biting and follow basic commands?'
+    },
+    {
+      icon: '🐕',
+      title: 'Dog Care Tips',
+      question: 'What are the essential grooming needs for dogs?'
+    },
+    {
+      icon: '🐱',
+      title: 'Cat Care Tips',
+      question: 'Why is my cat not using the litter box and how can I fix it?'
+    },
+    {
+      icon: '💉',
+      title: 'Vaccinations & Vet Visits',
+      question: 'What vaccinations does my pet need and how often should I visit the vet?'
+    }
+  ];
+
+  useEffect(() => {
+    // Check if user is logged in
+    if (!user) {
+      navigate('/login', { state: { from: '/pawsbot', message: 'Please log in to use PawsBot' } });
+      return;
+    }
+
+    // Initial welcome message
+    setMessages([{
+      id: Date.now(),
+      type: 'bot',
+      content: `Hi ${user.username}! 👋 I'm PawsBot, your AI pet care assistant. Ask me anything about your furry friends!`,
+      timestamp: new Date()
+    }]);
+
+    // Check if Botpress is already loaded
+    if (window.botpress) {
+      console.log('Botpress already loaded');
+      return;
+    }
+
+    // Load Botpress v3.3 webchat script
+    const script = document.createElement('script');
+    script.src = 'https://cdn.botpress.cloud/webchat/v3.3/inject.js';
+    script.async = true;
+    
+    script.onload = () => {
+      console.log('Botpress v3.3 script loaded');
+      
+      // Wait for botpress to be available
+      const initBot = () => {
+        if (window.botpress && window.botpress.init) {
+          console.log('Initializing Botpress...');
+          
+          // Initialize Botpress with your configuration
+          window.botpress.init({
+            "botId": "a3eb89a4-cd2e-4e91-b65c-e6fe34dffe9b",
+            "configuration": {
+              "version": "v2",
+              "composerPlaceholder": "Ask about your furry friends",
+              "botName": "Pawsbot",
+              "website": {},
+              "email": {},
+              "phone": {},
+              "termsOfService": {},
+              "privacyPolicy": {},
+              "color": "#8B5CF6",
+              "variant": "solid",
+              "headerVariant": "glass",
+              "themeMode": isDarkMode ? "dark" : "light",
+              "fontFamily": "inter",
+              "radius": 4,
+              "feedbackEnabled": false,
+              "footer": "",
+              "soundEnabled": false,
+              "embeddedChatId": "bp-embedded-webchat"
+            },
+            "clientId": "f540c4a7-c98e-44f5-bc83-752633f03bbf",
+            "selector": "#webchat"
+          });
+          
+          console.log('Botpress initialized successfully!');
+          
+          // Auto-open the chat when ready
+          window.botpress.on("webchat:ready", () => {
+            console.log('Botpress webchat ready!');
+            setBotpressLoading(false);
+            window.botpress.open();
+          });
+          
+        } else {
+          console.log('Waiting for window.botpress...');
+          setTimeout(initBot, 100);
+        }
+      };
+      
+      setTimeout(initBot, 100);
+    };
+
+    script.onerror = () => {
+      console.error('Failed to load Botpress script');
+    };
+
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup scripts on unmount
+      const scripts = document.querySelectorAll('script[src*="botpress"]');
+      scripts.forEach(s => {
+        if (document.body.contains(s)) {
+          document.body.removeChild(s);
+        }
+      });
+    };
+  }, [user, navigate]);
+
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Handle quick question click
+  const handleQuickQuestion = (question) => {
+    setInputMessage(question);
+    inputRef.current?.focus();
+  };
+
+  // Send message to Botpress
   const sendMessage = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     if (!inputMessage.trim() || isLoading) return;
 
     const userMessage = {
-      id: messages.length + 1,
+      id: Date.now(),
       type: 'user',
       content: inputMessage,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      // Try to connect to backend PawsBot API
-      const token = localStorage.getItem('authToken');
-      
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-      
-      const response = await fetch('http://localhost:5000/api/chat/pawsbot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ message: inputMessage })
-      });
+      // Send message to Botpress v3.3
+      if (window.botpress && window.botpress.sendEvent) {
+        console.log('Sending message to Botpress:', currentMessage);
+        
+        // Send the message using v3.3 API
+        window.botpress.sendEvent({
+          type: 'text',
+          payload: { text: currentMessage }
+        });
 
-      if (!response.ok) {
-        throw new Error(`API request failed with status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.success && data.data && data.data.response) {
+        // Show a response that the message was sent
+        setTimeout(() => {
+          const botMessage = {
+            id: Date.now() + 1,
+            type: 'bot',
+            content: 'I received your question! You can see my response in the chat widget below. 💬',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, botMessage]);
+          setIsLoading(false);
+        }, 500);
+        
+      } else {
+        // Botpress not available yet
+        console.warn('Botpress not available');
         const botMessage = {
-          id: messages.length + 2,
+          id: Date.now() + 1,
           type: 'bot',
-          content: data.data.response,
+          content: 'The chat widget is loading... Please wait a moment and try again, or use the widget below when it appears! 🤖',
           timestamp: new Date()
         };
         setMessages(prev => [...prev, botMessage]);
-      } else {
-        throw new Error(data.message || 'API request failed');
+        setIsLoading(false);
       }
     } catch (error) {
-      console.error('Error sending message to PawsBot:', error);
-      
-      // Enhanced fallback AI responses based on keywords
-      const botMessage = {
-        id: messages.length + 2,
+      console.error('Error in sendMessage:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
         type: 'bot',
-        content: generateFallbackResponse(inputMessage, error),
+        content: 'Please use the Botpress chat widget below to chat with me!',
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, botMessage]);
-    } finally {
+      setMessages(prev => [...prev, errorMessage]);
       setIsLoading(false);
     }
   };
 
+  // Handle Enter key
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
   return (
-    <div className="container" style={{ padding: '2rem 1rem', maxWidth: '800px' }}>
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+    <div className="pawsbot-page">
+      {/* Header */}
+      <div className="pawsbot-header" style={{
+        padding: '2rem 1.5rem',
+        textAlign: 'center',
+        background: 'var(--card-bg)',
+        borderBottom: '1px solid var(--border-color)'
+      }}>
         <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
-          🤖 PawsBot AI Assistant
+          🐾 PawsBot AI Assistant
         </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Ask me anything about pet care, health, behavior, and more!
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>
+          Your AI-powered pet care assistant - Ask me anything!
         </p>
       </div>
 
-      {/* Chat Container */}
-      <div className="card" style={{ height: '500px', display: 'flex', flexDirection: 'column' }}>
-        {/* Messages Area */}
-        <div style={{ 
-          flex: 1, 
-          overflowY: 'auto', 
-          padding: '1rem',
-          backgroundColor: 'var(--bg-secondary)',
-          borderRadius: '0.5rem',
-          marginBottom: '1rem'
+      {/* Quick Question Cards */}
+      <div style={{ padding: '2rem 1.5rem', maxWidth: '1200px', margin: '0 auto' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+          💬 Try asking about:
+        </h2>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1rem'
         }}>
-          {messages.map(message => (
-            <div key={message.id} style={{ 
-              marginBottom: '1rem',
-              display: 'flex',
-              justifyContent: message.type === 'user' ? 'flex-end' : 'flex-start'
-            }}>
-              <div style={{
-                maxWidth: '70%',
-                padding: '0.75rem 1rem',
-                borderRadius: '1rem',
-                backgroundColor: message.type === 'user' ? 'var(--primary)' : 'var(--card-bg)',
-                color: message.type === 'user' ? 'white' : 'var(--text-primary)',
-                boxShadow: 'var(--shadow-sm)',
-                border: message.type === 'bot' ? '1px solid var(--border-color)' : 'none'
-              }}>
-                <div style={{ whiteSpace: 'pre-wrap' }}>{message.content}</div>
-                <div style={{ 
-                  fontSize: '0.75rem', 
-                  opacity: 0.7, 
-                  marginTop: '0.25rem',
-                  textAlign: 'right'
-                }}>
-                  {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
-              </div>
-            </div>
-          ))}
-          
-          {isLoading && (
-            <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '1rem' }}>
-              <div style={{
-                padding: '0.75rem 1rem',
-                borderRadius: '1rem',
-                backgroundColor: 'var(--card-bg)',
-                border: '1px solid var(--border-color)',
-                boxShadow: 'var(--shadow-sm)'
-              }}>
-                <div className="spinner" style={{ width: '1rem', height: '1rem' }}></div>
-                <span style={{ marginLeft: '0.5rem', color: 'var(--text-secondary)' }}>
-                  PawsBot is thinking...
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Input Area */}
-        <form onSubmit={sendMessage} style={{ display: 'flex', gap: '0.5rem' }}>
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Ask me about your pet..."
-            className="form-input"
-            style={{ flex: 1 }}
-            disabled={isLoading}
-          />
-          <button 
-            type="submit" 
-            className="btn btn-primary"
-            disabled={isLoading || !inputMessage.trim()}
-          >
-            Send
-          </button>
-        </form>
-      </div>
-
-      {/* Quick Actions */}
-      <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-        <h3 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>Quick Questions</h3>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-          {[
-            "How often should I feed my cat?",
-            "My dog won't stop barking",
-            "What are signs of illness in pets?",
-            "How to train a puppy?"
-          ].map((question, index) => (
-            <button
+          {quickQuestions.map((item, index) => (
+            <div
               key={index}
-              onClick={() => setInputMessage(question)}
-              className="btn btn-outline"
-              style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}
+              className="card"
+              style={{
+                padding: '1.5rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                border: '1px solid var(--border-color)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = 'var(--shadow-lg)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'var(--shadow)';
+              }}
             >
-              {question}
-            </button>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>{item.icon}</div>
+              <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '0.5rem', color: 'var(--text-primary)' }}>
+                {item.title}
+              </h3>
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+                {item.question}
+              </p>
+            </div>
           ))}
         </div>
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-        <Link to="/" className="btn btn-ghost">
-          Back to Home
-        </Link>
+      {/* Botpress Widget Container - Full Width Embedded */}
+      <div style={{ padding: '2rem 1.5rem', maxWidth: '1200px', margin: '0 auto', marginBottom: '3rem' }}>
+        <h2 style={{ fontSize: '1.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
+          💬 Chat with PawsBot
+        </h2>
+        {botpressLoading && (
+          <div style={{
+            width: '100%',
+            height: '600px',
+            border: '1px solid var(--border-color)',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--card-bg)'
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div className="spinner" style={{ margin: '0 auto 1rem' }}></div>
+              <p style={{ color: 'var(--text-secondary)' }}>Loading PawsBot...</p>
+            </div>
+          </div>
+        )}
+        <div id="webchat" style={{ 
+          width: '100%', 
+          height: '600px',
+          border: '1px solid var(--border-color)',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: 'var(--shadow-lg)',
+          display: botpressLoading ? 'none' : 'block'
+        }}></div>
       </div>
     </div>
   );

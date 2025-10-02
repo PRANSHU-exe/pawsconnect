@@ -1,0 +1,165 @@
+/* Botpress Webchat Custom Styling */
+
+/* Desktop/Laptop - Side panel like Cascade */
+@media (min-width: 1024px) {
+  /* Container for the webchat */
+  #bp-web-widget-container {
+    position: fixed !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 420px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 9998 !important;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  /* The iframe itself */
+  #bp-web-widget-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Hide the default bubble button when chat is open */
+  #bp-web-widget-container.bp-widget-web.bp-widget-opened .bp-widget-btn {
+    display: none !important;
+  }
+}
+
+/* Tablets - Slightly smaller side panel */
+@media (min-width: 768px) and (max-width: 1023px) {
+  #bp-web-widget-container {
+    position: fixed !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 380px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 9998 !important;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  #bp-web-widget-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Mobile Phones - Full screen overlay */
+@media (max-width: 767px) {
+  #bp-web-widget-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    z-index: 9999 !important;
+  }
+
+  #bp-web-widget-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Ensure the chat takes full screen on mobile */
+  .bp-widget-web {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+/* Floating bubble button styling (when chat is closed) */
+.bp-widget-btn {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #8B5CF6, #10B981) !important;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4) !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  z-index: 9997 !important;
+}
+
+.bp-widget-btn:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6) !important;
+}
+
+/* Label below the bubble */
+.bp-widget-btn::after {
+  content: 'ASK PawsBot' !important;
+  position: absolute !important;
+  bottom: -30px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: var(--card-bg) !important;
+  color: var(--text-primary) !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid var(--border-color) !important;
+  pointer-events: none !important;
+}
+
+/* Mobile bubble button */
+@media (max-width: 767px) {
+  .bp-widget-btn {
+    bottom: 20px !important;
+    right: 20px !important;
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+
+/* Smooth transitions */
+#bp-web-widget-container {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out !important;
+}
+
+/* When chat is opening */
+#bp-web-widget-container.bp-widget-opening {
+  transform: translateX(0) !important;
+  opacity: 1 !important;
+}
+
+/* When chat is closing */
+#bp-web-widget-container.bp-widget-closing {
+  transform: translateX(100%) !important;
+  opacity: 0 !important;
+}
+
+/* Ensure proper stacking with navbar */
+.navbar {
+  z-index: 1000 !important;
+}
+
+/* Overlay backdrop for mobile */
+@media (max-width: 767px) {
+  .bp-widget-web.bp-widget-opened::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+  }
+}

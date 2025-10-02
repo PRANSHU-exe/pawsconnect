@@ -1,0 +1,468 @@
+/* Modern Responsive Styles with Enhanced Dark Mode */
+
+/* Import navbar styles */
+@import './navbar.css';
+
+/* Enhanced Dark Mode Variables */
+[data-theme="dark"] {
+  --bg-primary: #0A0E1A !important;
+  --bg-secondary: #131825 !important;
+  --bg-tertiary: #1E2537 !important;
+  --card-bg: rgba(30, 37, 55, 0.7) !important;
+  --overlay-bg: rgba(0, 0, 0, 0.75) !important;
+  
+  --text-primary: #F1F5F9 !important;
+  --text-secondary: #94A3B8 !important;
+  --text-muted: #64748B !important;
+  
+  --border-color: rgba(51, 65, 85, 0.4) !important;
+  --shadow-sm: 0 2px 8px 0 rgba(0, 0, 0, 0.4) !important;
+  --shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.5) !important;
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.6) !important;
+  --shadow-md: 0 8px 16px -2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Glass morphism for cards in dark mode */
+[data-theme="dark"] .card {
+  background: rgba(30, 37, 55, 0.6) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.card {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced body background */
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #0A0E1A 0%, #131825 50%, #0A0E1A 100%);
+  background-attachment: fixed;
+}
+
+/* Responsive Container */
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Mobile First - Base Styles (320px+) */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.75rem;
+  }
+  
+  .main-content {
+    padding-top: 70px;
+  }
+  
+  .card {
+    padding: 0.875rem;
+    border-radius: 0.625rem;
+  }
+  
+  h1 {
+    font-size: 1.5rem !important;
+    line-height: 1.3;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.3;
+  }
+  
+  h3 {
+    font-size: 1.125rem !important;
+  }
+  
+  p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  
+  .btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  
+  .btn-group .btn {
+    width: 100%;
+  }
+}
+
+/* Small Mobile (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .card {
+    padding: 1rem;
+  }
+  
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2 {
+    font-size: 1.375rem !important;
+  }
+}
+
+/* Tablet Portrait (641px - 768px) */
+@media (min-width: 641px) and (max-width: 768px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+  
+  .card {
+    padding: 1.25rem;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .btn-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .btn-group .btn {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+/* Tablet Landscape (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding: 0 2rem;
+  }
+  
+  .card {
+    padding: 1.5rem;
+  }
+  
+  .btn {
+    width: auto;
+  }
+}
+
+/* Desktop (1025px - 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .container {
+    padding: 0 2.5rem;
+  }
+}
+
+/* Large Desktop (1441px+) */
+@media (min-width: 1441px) {
+  .container {
+    max-width: 1600px;
+    padding: 0 3rem;
+  }
+}
+
+/* Grid Layouts - Responsive */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 1025px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+}
+
+/* Flex Utilities - Responsive */
+.flex-col-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .flex-col-mobile {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* Form Responsiveness */
+.form-input,
+.form-textarea {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .form-input,
+  .form-textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.625rem;
+  }
+}
+
+/* Image Responsiveness */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.responsive-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Video Responsiveness */
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.video-container iframe,
+.video-container video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Touch Target Sizes (Accessibility) */
+@media (max-width: 768px) {
+  button,
+  a.btn,
+  .clickable {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Hide scrollbar on mobile for cleaner look */
+@media (max-width: 480px) {
+  .hide-scrollbar-mobile {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar-mobile::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Utility Classes */
+.mobile-only {
+  display: block;
+}
+
+.desktop-only {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none;
+  }
+  
+  .desktop-only {
+    display: block;
+  }
+}
+
+.tablet-only {
+  display: none;
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-only {
+    display: block;
+  }
+}
+
+/* Text Responsiveness */
+.text-responsive {
+  font-size: clamp(0.875rem, 2vw, 1rem);
+}
+
+.heading-responsive {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+
+/* Spacing Utilities - Responsive */
+.spacing-sm {
+  padding: 0.5rem;
+}
+
+.spacing-md {
+  padding: 1rem;
+}
+
+.spacing-lg {
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .spacing-sm {
+    padding: 0.75rem;
+  }
+  
+  .spacing-md {
+    padding: 1.5rem;
+  }
+  
+  .spacing-lg {
+    padding: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .spacing-sm {
+    padding: 1rem;
+  }
+  
+  .spacing-md {
+    padding: 2rem;
+  }
+  
+  .spacing-lg {
+    padding: 3rem;
+  }
+}
+
+/* Safe Area Insets for Mobile Devices */
+@supports (padding: max(0px)) {
+  .safe-area-inset {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* Landscape Orientation Adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .main-content {
+    padding-top: 60px;
+  }
+  
+  .card {
+    padding: 0.75rem;
+  }
+  
+  h1 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .modern-navbar,
+  .mobile-menu,
+  .theme-toggle-btn,
+  .btn-cta,
+  .btn-logout {
+    display: none !important;
+  }
+  
+  .main-content {
+    padding-top: 0;
+  }
+  
+  .card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid currentColor;
+  }
+  
+  .btn {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

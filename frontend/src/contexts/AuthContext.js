@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { API_ENDPOINTS } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -22,7 +23,7 @@ export const AuthProvider = ({ children }) => {
       if (token && userData) {
         try {
           // Verify token with backend using /me endpoint
-          const response = await fetch('http://localhost:5000/api/auth/me', {
+          const response = await fetch(API_ENDPOINTS.ME, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,

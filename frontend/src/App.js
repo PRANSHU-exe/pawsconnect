@@ -17,7 +17,6 @@ import CategoryTimeline from './pages/CategoryTimeline';
 import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import CreatePost from './pages/CreatePost';
-import PawsBot from './pages/PawsBot';
 import AuthCallback from './pages/AuthCallback';
 
 // Components
@@ -26,6 +25,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 // Styles
 import './App.css';
+import './styles/enhanced-theme.css';
+import './styles/responsive-enhanced.css';
 import './styles/modern.css';
 import './styles/timeline.css';
 import './styles/pet-avatar.css';
@@ -33,6 +34,8 @@ import './styles/cookie-consent.css';
 import './styles/responsive.css';
 import './styles/dark-mode.css';
 import './styles/animations.css';
+import './styles/modern-responsive.css';
+import './styles/botpress-custom.css';
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -48,6 +51,105 @@ function App() {
   useEffect(() => {
     // Hide loading screen when React loads
     document.body.classList.add('loaded');
+    
+    // Load Botpress webchat bubble with proper sequencing
+    const script1 = document.createElement('script');
+    script1.src = 'https://cdn.botpress.cloud/webchat/v3.3/inject.js';
+    script1.async = true;
+    
+    script1.onload = () => {
+      console.log('✅ Botpress inject loaded');
+      
+      // Only load config after inject is ready
+      const script2 = document.createElement('script');
+      script2.src = 'https://files.bpcontent.cloud/2025/10/01/08/20251001082958-80TU2NR9.js';
+      
+      script2.onload = () => {
+        console.log('✅ Botpress config loaded');
+        
+        // Wait for Botpress to fully initialize
+        setTimeout(() => {
+          // Make Botpress globally accessible for the card click
+          window.openBotpressChat = () => {
+            console.log('🤖 Opening PawsBot chat...');
+            
+            // Look for Botpress iframe or container
+            const iframe = document.querySelector('iframe[src*="botpress"]') || 
+                          document.querySelector('iframe[id*="webchat"]') ||
+                          document.querySelector('#bp-web-widget iframe');
+            
+            console.log('Botpress iframe:', iframe);
+            
+            // Look for any Botpress-related elements
+            const bpContainer = document.querySelector('#bp-web-widget-container') ||
+                               document.querySelector('[id*="botpress"]') ||
+                               document.querySelector('[class*="botpress"]');
+            
+            console.log('Botpress container:', bpContainer);
+            
+            // Try to find button in shadow DOM or iframe
+            if (bpContainer) {
+              const shadowRoot = bpContainer.shadowRoot;
+              if (shadowRoot) {
+                const shadowButton = shadowRoot.querySelector('button');
+                if (shadowButton) {
+                  shadowButton.click();
+                  console.log('✅ Clicked button in shadow DOM');
+                  return;
+                }
+              }
+              
+              // Try clicking the container itself
+              bpContainer.click();
+              console.log('✅ Clicked Botpress container');
+              return;
+            }
+            
+            // Try clicking the iframe
+            if (iframe) {
+              iframe.click();
+              console.log('✅ Clicked Botpress iframe');
+              return;
+            }
+            
+            // Last resort: use window.botpress API
+            console.log('Trying window.botpress:', window.botpress);
+            if (window.botpress && window.botpress.sendEvent) {
+              window.botpress.sendEvent({ type: 'show' });
+              console.log('✅ Opened via window.botpress');
+            } else {
+              console.error('❌ Could not find any way to open Botpress');
+              console.log('Available window properties:', Object.keys(window).filter(k => k.toLowerCase().includes('bot')));
+            }
+          };
+          
+          console.log('✅ PawsBot ready to chat!');
+        }, 2000);
+      };
+      
+      script2.onerror = () => {
+        console.error('❌ Failed to load Botpress config');
+      };
+      
+      document.body.appendChild(script2);
+    };
+    
+    script1.onerror = () => {
+      console.error('❌ Failed to load Botpress inject');
+    };
+    
+    document.body.appendChild(script1);
+    
+    return () => {
+      // Cleanup on unmount
+      const scripts = document.querySelectorAll('script[src*="botpress"]');
+      scripts.forEach(script => {
+        if (document.body.contains(script)) {
+          document.body.removeChild(script);
+        }
+      });
+      delete window.openBotpressChat;
+    };
   }, []);
 
   return (
@@ -74,11 +176,6 @@ function App() {
                   <Route path="/create-post" element={
                     <ProtectedRoute>
                       <CreatePost />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/pawsbot" element={
-                    <ProtectedRoute>
-                      <PawsBot />
                     </ProtectedRoute>
                   } />
                   
