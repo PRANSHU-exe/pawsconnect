@@ -18,6 +18,7 @@ const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
 const petRoutes = require('./routes/pets');
 const chatRoutes = require('./routes/chat');
+const placesRoutes = require('./routes/places');
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/places', placesRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -16,6 +16,9 @@ export const API_ENDPOINTS = {
   PAWSBOT: `${API_BASE_URL}/api/chat/pawsbot`,
   EMERGENCY_CHECK: `${API_BASE_URL}/api/chat/emergency-check`,
   SUMMARIZE_ANSWERS: `${API_BASE_URL}/api/chat/summarize-answers`,
+  GROUP_CHAT_MESSAGES: (category) => `${API_BASE_URL}/api/chat/group/${category}`,
+  GROUP_CHAT_SEND: (category) => `${API_BASE_URL}/api/chat/group/${category}`,
+  GROUP_CHAT_REACT: (category, messageId) => `${API_BASE_URL}/api/chat/group/${category}/${messageId}/react`,
   
   // Posts
   POSTS: `${API_BASE_URL}/api/posts`,

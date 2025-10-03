@@ -18,6 +18,8 @@ import PostDetail from './pages/PostDetail';
 import Profile from './pages/Profile';
 import CreatePost from './pages/CreatePost';
 import AuthCallback from './pages/AuthCallback';
+import CommunityChat from './pages/CommunityChat';
+import PetServices from './pages/PetServices';
 
 // Components
 import Navbar from './components/Navbar';
@@ -178,6 +180,12 @@ function App() {
                       <CreatePost />
                     </ProtectedRoute>
                   } />
+                  <Route path="/community-chat" element={
+                    <ProtectedRoute>
+                      <CommunityChat />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/pet-services" element={<PetServices />} />
                   
                   {/* Redirect unknown routes to home */}
                   <Route path="*" element={<Navigate to="/" replace />} />

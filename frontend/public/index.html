@@ -64,19 +64,24 @@
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.05); }
       }
-      
       /* Hide loading when React loads */
       .loaded #loading {
         display: none;
       }
     </style>
+    <!-- Google Maps JavaScript API with Places Library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCBA7AZp9ZMjYcJWvzSkv0zCumqR0vAXKo&libraries=places&callback=initMap" async defer></script>
+    <script>
+      function initMap() {
+        window.googleMapsLoaded = true;
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     
     <!-- Loading screen -->
     <div id="loading">
-      <div class="loading-logo">🐾</div>
       <div class="loading-text">PawsConnect</div>
       <div class="loading-subtext">Connecting pet lovers worldwide</div>
     </div>

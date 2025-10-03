@@ -54,22 +54,70 @@ const Home = () => {
         gap: '2rem',
         marginBottom: '4rem'
       }}>
-        <div className="card">
+        <Link 
+          to="/community-chat" 
+          className="card"
+          style={{ 
+            textDecoration: 'none',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(139, 92, 246, 0.2)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '';
+          }}
+        >
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>💬</div>
           <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Community Forum</h3>
           <p style={{ color: 'var(--text-secondary)' }}>
             Ask questions, share experiences, and connect with fellow pet lovers in our supportive community.
           </p>
-        </div>
+          <div style={{ 
+            marginTop: '1rem', 
+            color: 'var(--primary)', 
+            fontWeight: '600',
+            fontSize: '0.9rem'
+          }}>
+            Join Chat →
+          </div>
+        </Link>
 
 
-        <div className="card">
+        <Link 
+          to="/pet-services" 
+          className="card"
+          style={{ 
+            textDecoration: 'none',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.boxShadow = '0 8px 20px rgba(16, 185, 129, 0.2)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '';
+          }}
+        >
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🏥</div>
           <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-primary)' }}>Health & Wellness</h3>
           <p style={{ color: 'var(--text-secondary)' }}>
-            Access reliable information about pet health, nutrition, and wellness from trusted sources.
+            Find nearby pet hospitals, clinics, and medical stores for your furry friends.
           </p>
-        </div>
+          <div style={{ 
+            marginTop: '1rem', 
+            color: 'var(--secondary)', 
+            fontWeight: '600',
+            fontSize: '0.9rem'
+          }}>
+            Find Services →
+          </div>
+        </Link>
       </div>
 
       {/* Categories Section */}
